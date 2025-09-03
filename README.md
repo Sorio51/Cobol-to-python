@@ -15,7 +15,7 @@ The goal is to preserve the business logic while improving security, robustness,
 | **Available operations** | 1 = View Balance, 2 = Credit, 3 = Debit, 4 = Exit | Same menu and numbering preserved |
 | **Reading/Writing balance** | DataProgram read and wrote balance with 6 digits + 2 decimals | Same mechanism with `DataProgram.operate('READ'/'WRITE')` |
 | **Modularity** | Code split into `main.cob`, `operations.cob`, `data.cob` | Modular structure: `main.py`, `operations.py`, `data.py` |
-
+| **Decimal separator** | Only `.` allowed | Python also accepts `,` as decimal separator (e.g., `1,23` → `1.23`) |
 ---
 
 ## 3️ What has not been preserved / improved
@@ -39,7 +39,7 @@ The goal is to preserve the business logic while improving security, robustness,
 
 1. **Maximum balance**: 999,999.99. Any operation exceeding this limit is rejected.
 2. **Positive amounts only**: `> 0`. Zero or negative amounts are not allowed.
-3. **Input validation**: Only strings matching `\d+(\.\d+)?` are accepted.
+3. **Input validation**: Only strings matching `\d+(\.\d+)?` or `\d+(,\d+)?` are accepted (commas are converted to dots).
 4. **Balance display format**: exactly 6 digits before the decimal and 2 digits after, with leading zeros (`09.2f`, e.g. `001000.00`).
 5. **User menu**: options 1–4 only; any other choice is rejected.
 6. **Safety**: invalid inputs never modify the balance.

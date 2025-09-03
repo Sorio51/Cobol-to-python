@@ -11,7 +11,9 @@ def run_operation(operation_type):
 
     elif operation_type == 'CREDIT':
         try:
-            amount = float(input("Enter credit amount: ").strip())
+            user_input = input("Enter credit amount: ").strip()
+            user_input = user_input.replace(',', '.')
+            amount = float(user_input)
         except ValueError:
             print("Please enter a valid number (digits with an optional decimal point).")
             return
@@ -30,7 +32,9 @@ def run_operation(operation_type):
 
     elif operation_type == 'DEBIT':
         try:
-            amount = float(input("Enter debit amount: ").strip())
+            user_input = input("Enter debit amount: ").strip()
+            user_input = user_input.replace(',', '.')
+            amount = float(user_input)
         except ValueError:
             print("Please enter a valid number (digits with an optional decimal point).")
             return

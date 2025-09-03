@@ -133,5 +133,29 @@ class TestOperations(unittest.TestCase):
         self.assertEqual(balance, 0.00)
         mock_print.assert_called_with("Amount debited. New balance: 000000.00")
 
+    @patch('builtins.input', return_value='1,23')
+    @patch('builtins.print')
+    def test_credit_with_comma_decimal(self, mock_print, mock_input):
+        operations.run_operation('CREDIT')
+        balance = self.data_program.operate('READ')
+        self.assertEqual(balance, 1001.23)
+        mock_print.assert_called_with('Amount credited. New balance: 001001.23')
+
+    @patch('builtins.input', return_value='100.123')
+    @patch('builtins.print')
+    def test_credit_more_than_two_decimals(self, mock_print, mock_input):
+        operations.run_operation('CREDIT')
+        balance = self.data_program.operate('READ')
+        self.assertEqual(balance, 1100.12)
+        mock_print.assert_called_with('Amount credited. New balance: 001100.12')
+
+    @patch('builtins.input', return_value='1000000')
+    @patch('builtins.print')
+    def test_credit_exceed_max_input(self, mock_print, mock_input):
+        operations.run_operation('CREDIT')
+        balance = self.data_program.operate('READ')
+        self.assertEqual(balance, 1000.00)
+        mock_print.assert_called_with('Operation cancelled: balance cannot exceed 999 999.99')
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
