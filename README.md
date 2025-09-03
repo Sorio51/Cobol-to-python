@@ -22,11 +22,16 @@ The goal is to preserve the business logic while improving security, robustness,
 
 | Feature | COBOL Behavior | Python Behavior |
 |---------|----------------|----------------|
-| **Invalid input handling** | Accepted negative numbers, multiple points, letters → could result in phantom debit/credit | Strict validation: only positive numbers with at most one decimal point are accepted, clear user messages |
-| **Zero or negative amounts** | Accepted, sometimes displaying “Amount credited/debited” even if nothing changed | Rejected: message `"Please enter a positive number greater than zero"` |
-| **Multiple decimals** | Accepted and handled incorrectly | Rejected with message `"Please enter a valid number (digits with an optional decimal point)"` |
-| **Amounts exceeding COBOL limits** | COBOL truncated to 6 digits before the decimal | Python rejects transactions that would exceed `999999.99` |
-| **“Buggy” behavior** | Operations could display a credited/debited amount without any actual change | Python ensures balance never changes in these cases |
+| **Invalid input handling** | Negative numbers, multiple decimal points, letters → could result in phantom debit/credit | Strict validation: only positive numbers, at most one decimal point; spaces trimmed; clear error messages for invalid input |
+| **Zero or negative amounts** | Could credit/debit 0 or negative amounts | Rejected: `"Please enter a positive number greater than zero"` |
+| **Multiple decimals** | Accepted incorrectly | Rejected: `"Please enter a valid number (digits with an optional decimal point)"` |
+| **Amounts exceeding COBOL limits** | Truncated to 6 digits before decimal | Rejected if operation would exceed `999999.99`; message `"Operation cancelled: balance cannot exceed 999 999.99"` |
+| **Leading/trailing spaces in input** | Ignored or caused errors | Spaces are automatically stripped before processing |
+| **Insufficient funds** | COBOL could allow negative balances or behave inconsistently | Python blocks the operation with `"Insufficient funds for this debit."` |
+| **“Buggy” display behavior** | Credited/debited amounts could display without actual change | Python ensures balance never changes for invalid operations |
+| **User menu robustness** | COBOL might crash or accept invalid menu numbers | Python rejects invalid options (anything not 1–4) with `"Unknown operation."` |
+| **Non-numeric input** | Letters or multiple points could be processed as valid | Rejected with clear error message; prevents accidental balance modification |
+| **Maximum balance reached** | COBOL truncated values silently | Python stops credit operations when balance would exceed `999999.99` and displays a clear message |
 
 ---
 
@@ -35,7 +40,7 @@ The goal is to preserve the business logic while improving security, robustness,
 1. **Maximum balance**: 999,999.99. Any operation exceeding this limit is rejected.
 2. **Positive amounts only**: `> 0`. Zero or negative amounts are not allowed.
 3. **Input validation**: Only strings matching `\d+(\.\d+)?` are accepted.
-4. **Balance display format**: exactly 6 digits before the decimal and 2 digits after, with leading zeros (`09.2f`, e.g. `001000.00`).  
+4. **Balance display format**: exactly 6 digits before the decimal and 2 digits after, with leading zeros (`09.2f`, e.g. `001000.00`).
 5. **User menu**: options 1–4 only; any other choice is rejected.
 6. **Safety**: invalid inputs never modify the balance.
 
