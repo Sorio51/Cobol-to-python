@@ -39,6 +39,18 @@ sequenceDiagram
     Data-->>Ops: Return balance
     Ops-->>User: Show result
 ```
+### System map
+
+show the major modules (CLI, GUI, Orchestrator, Business Rules, Data/Security, Effects) and how requests and data move between them.
+
+![Architecture 1 — Minimal Modular](final_readme/Images/architecture-1.svg "Architecture 1 — Minimal Modular")
+
+
+
+### Happy path
+sequence of calls for the common case, including money parsing and persistence.
+![Architecture 2 — Data Flow](final_readme/Images/architecture-2.svg "Architecture 2 — Data Flow")
+
 
 ### Key Components
 - **Storage**: JSON backend (default) or in-memory (for tests). Atomic writes + file locking.
@@ -170,7 +182,20 @@ sequenceDiagram
 
 ---
 
-## 8. Deployment & Usage
+## 8. Architecture 4 — Golden Master
+
+This is the “Golden Master” architecture: a reference implementation whose behavior is treated as the canonical source of truth. Any refactor or modernization is validated against the Golden Master via snapshot-style tests to ensure 100% parity with expected inputs/outputs and state transitions.
+
+- Purpose: preserve behavior while enabling safe refactors
+- Scope: menu flow, credit/debit rules, formatting, storage I/O
+- Guarantee: invalid inputs never mutate state; all outputs are deterministic
+
+![Architecture 4 — Golden Master](final_readme/Images/architecture-4.svg "Architecture 4 — Golden Master")
+
+Key idea: keep business logic separated (`operations.py`) from storage (`data.py`) and orchestration (`main.py`), then lock behavior with tests acting as the Golden Master. Any change must keep outputs identical for the same inputs.
+
+
+## 9. Deployment & Usage
 
 ### Quickstart
 ```bash
